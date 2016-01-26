@@ -8,13 +8,6 @@ class AmplLexer(RegexLexer):
     filenames = ['*.mod', '*.dat', '*.run']
 
     KEYWORDS = [
-        'set',
-        'param',
-        'var',
-        'minimize'
-    ]
-
-    MODEL_DECLARATIONS = [
         "set",
         "param",
         "var",
@@ -22,32 +15,63 @@ class AmplLexer(RegexLexer):
         "minimize",
         "maximize",
         "subject to",
-        "node"
+        "node",
+        "check",
+        "in",
+        "within",
+        "logical",
+        "integer",
+        "solve",
+        "option",
+        "sum",
+        "model",
+        "data"
     ]
 
     char = r'[a-zA-Z$._0-9@]'
     identifier = r'(?:[a-zA-Z$_]' + char + '*|\.' + char + '+)'
     number = r'[+-]?(?:0[xX][a-zA-Z0-9]+|\d+)'
-    binary_number = r'0b[01_]+'
-    model_declaration = r'(?i)(' + '|'.join(MODEL_DECLARATIONS) + ')'
-    single_char = r"'\\?" + char + "'"
-    string = r'"(\\"|[^"])*"'
+    #binary_number = r'0b[01_]+'
+    #model_declaration = r'(?i)(' + '|'.join(MODEL_DECLARATIONS) + ')'
+    #single_char = r"'\\?" + char + "'"
+    #string = r'"(\\"|[^"])*"'
+
+    keyword = r'(' + '|'.join(KEYWORDS) + ')[^a-z]'
 
     tokens = {
         'root': [
+            (keyword, Keyword),
+            (identifier, Name.Label),
             include('whitespace'),
-            (r'#.*\n', Comment),
-            #(model_declaration, Name.Function, 'declaration-args'),
-        ],
-
-        'declaration-args': [
-            #(identifier, Name.Variable),
-            (r'.*', Name.Variable)
+            include('comments'),
+            include('punctuation'),
+            include('operators'),
+            include('litterals'),
+            include('aliases')
         ],
 
         'whitespace': [
             (r'\n', Text),
-            (r'\s+', Text),
-            (r';', Text)
+            (r'\s+', Text)
+        ],
+
+        'comments': [
+            (r'#.*\n', Comment),
+        ],
+
+        'punctuation': [
+            (r'[:{};,]', Punctuation)
+        ],
+
+        'operators': [
+            (r'[\+\-<>=\[\]\*/\^]', Operator)
+        ],
+
+        'litterals': [
+            (number, Number)
+        ],
+
+        'aliases': [
+            (r"'.*'", String)
         ]
     }
