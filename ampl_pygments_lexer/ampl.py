@@ -25,7 +25,8 @@ class AmplLexer(RegexLexer):
         "option",
         "sum",
         "model",
-        "data"
+        "data",
+        "cross"
     ]
 
     char = r'[a-zA-Z$._0-9@]'
